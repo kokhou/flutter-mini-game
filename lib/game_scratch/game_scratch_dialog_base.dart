@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_mini_game/game_scratch/game_scratch.dart';
+import 'package:flutter_mini_game/game_scratch/game_scratch_base.dart';
 import 'package:flutter_mini_game/generated/assets.dart';
 import 'package:lottie/lottie.dart';
 import 'package:material_dialogs/material_dialogs.dart';
@@ -10,7 +10,7 @@ gameDialog(BuildContext context) {
   Dialogs.materialDialog(
     customViewPosition: CustomViewPosition.AFTER_ACTION,
     color: Colors.white,
-    msg: "Scratch 3 out of 9 boxes to win yourself a reward",
+    msg: "To WIN a Special Prize you need to get 3 scratch with same value",
     title: 'Scratch to win!',
     titleStyle: const TextStyle(
       color: Colors.black,

@@ -1,31 +1,33 @@
 import 'package:decimal/decimal.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_mini_game/game_scratch/game_scratch_dialog.dart';
+import 'package:flutter_mini_game/game_scratch/game_scratch_dialog_base.dart';
 import 'package:flutter_mini_game/generated/assets.dart';
 import 'package:intl/intl.dart';
 import 'package:synchronized/synchronized.dart';
-import 'scratch_box.dart';
-
-class Prize {
-  double amount;
-  int noOfTimes;
-
-  Prize(this.amount, this.noOfTimes);
-}
+import 'scratch_box_base.dart';
 
 class GameScratchConfig {
-  String prizeMessage = "Congratulations!\nYou Won";
-  List<Prize> prizes = [
-    Prize(5.0, 1),
-    Prize(3.0, 1),
-    Prize(2.0, 1),
-    Prize(1.0, 4),
-    Prize(0, 2)
-  ];
-  int noOfTiles = 9;
+  double firstPrizeAmount;
+  double secondPrizeAmount;
+  double thirdPrizeAmount;
+  int specialPrizeMultiply;
+  String normalPrizeMessage;
+  String specialPrizeMessage;
+  String firstPrize;
+  String secondPrize;
+  String thirdPrize;
   String scratchImage;
 
   GameScratchConfig({
+    this.firstPrizeAmount = 1.0,
+    this.secondPrizeAmount = 0.5,
+    this.thirdPrizeAmount = 0.1,
+    this.specialPrizeMultiply = 3,
+    this.normalPrizeMessage = "Congratulations!\nYou Won",
+    this.specialPrizeMessage = "Congratulation! It's Special Prize!\nYou Won",
+    this.firstPrize = Assets.gameScratchGameFirstPrize,
+    this.secondPrize = Assets.gameScratchGameSecondPrize,
+    this.thirdPrize = Assets.gameScratchGameThirdPrize,
     this.scratchImage = Assets.gameScratchScratch,
   });
 }
@@ -102,17 +104,62 @@ class _GameScratchWidgetState extends State<GameScratchWidget>
   }
 
   List<List<ScratchCard>> randomList() {
-    List<ScratchCard> pieceOfItems = [];
-    for (var prize in widget.gameScratchConfig.prizes) {
-      for (int i = 0; i < prize.noOfTimes; i++) {
-        pieceOfItems.add(ScratchCard(
-          amount: prize.amount,
-          displayText:
-              'RM${NumberFormat('0.00', 'en_Us').format(prize.amount)}',
-          scratchImage: widget.gameScratchConfig.scratchImage,
-        ));
-      }
-    }
+    List<ScratchCard> pieceOfItems = [
+      ScratchCard(
+        prize: "1st",
+        amount: widget.gameScratchConfig.firstPrizeAmount,
+        image: widget.gameScratchConfig.firstPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "1st",
+        amount: widget.gameScratchConfig.firstPrizeAmount,
+        image: widget.gameScratchConfig.firstPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "1st",
+        amount: widget.gameScratchConfig.firstPrizeAmount,
+        image: widget.gameScratchConfig.firstPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "2nd",
+        amount: widget.gameScratchConfig.secondPrizeAmount,
+        image: widget.gameScratchConfig.secondPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "2nd",
+        amount: widget.gameScratchConfig.secondPrizeAmount,
+        image: widget.gameScratchConfig.secondPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "2nd",
+        amount: widget.gameScratchConfig.secondPrizeAmount,
+        image: widget.gameScratchConfig.secondPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "3rd",
+        amount: widget.gameScratchConfig.thirdPrizeAmount,
+        image: widget.gameScratchConfig.thirdPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "3rd",
+        amount: widget.gameScratchConfig.thirdPrizeAmount,
+        image: widget.gameScratchConfig.thirdPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      ),
+      ScratchCard(
+        prize: "3rd",
+        amount: widget.gameScratchConfig.thirdPrizeAmount,
+        image: widget.gameScratchConfig.thirdPrize,
+        scratchImage: widget.gameScratchConfig.scratchImage,
+      )
+    ];
     pieceOfItems.shuffle();
     return List.generate(
         3, (i) => List.generate(3, (j) => pieceOfItems[(i * 3) + j]));
@@ -163,14 +210,23 @@ class _GameScratchWidgetState extends State<GameScratchWidget>
               }
             }
           }
+          bool isSpecial =
+              selectedScratch.map((item) => item.amount).toSet().length == 1;
 
           double totalEarn = selectedScratch.fold(
               0.0,
               (sum, prize) =>
                   (Decimal.parse("$sum") + Decimal.parse("${prize.amount}"))
                       .toDouble());
+          if (isSpecial) {
+            totalEarn =
+                totalEarn * widget.gameScratchConfig.specialPrizeMultiply;
+          }
 
-          winDialog(context, widget.gameScratchConfig.prizeMessage,
+          String normalPrize = widget.gameScratchConfig.normalPrizeMessage;
+          String specialPrize = widget.gameScratchConfig.specialPrizeMessage;
+
+          winDialog(context, isSpecial ? specialPrize : normalPrize,
               "RM${NumberFormat('0.00', 'en_Us').format(totalEarn)}", () {
             Navigator.of(context, rootNavigator: true).pop();
             widget.onGameEnd?.call(totalEarn);

@@ -3,7 +3,8 @@ import 'package:flutter_mini_game/generated/assets.dart';
 import 'package:scratcher/scratcher.dart';
 
 class ScratchCard {
-  String displayText;
+  String prize;
+  String image;
   String scratchImage;
   bool scratched;
   bool thresholdReached;
@@ -12,7 +13,8 @@ class ScratchCard {
   final key = GlobalKey<ScratcherState>();
 
   ScratchCard({
-    required this.displayText,
+    this.prize = "first",
+    required this.image,
     this.scratched = false,
     this.scratchImage = Assets.gameScratchScratch,
     this.thresholdReached = false,
@@ -30,7 +32,7 @@ class ScratchCard {
 
   @override
   String toString() {
-    return 'ScratchCard{displayText: $displayText, scratched: $scratched, threshold: $thresholdReached, amount: $amount, enableScratched: $enableScratched}';
+    return 'ScratchCard{prize: $prize, image: $image, scratched: $scratched, threshold: $thresholdReached, amount: $amount, enableScratched: $enableScratched}';
   }
 }
 
@@ -63,14 +65,11 @@ class _ScratchBoxState extends State<ScratchBox> {
     var icon = AnimatedOpacity(
       opacity: opacity,
       duration: const Duration(milliseconds: 750),
-      child: Center(
-        heightFactor: 80,
-        widthFactor: 80,
-        child: Text(
-          widget.scratchCard.displayText,
-          textAlign: TextAlign.center,
-          style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-        ),
+      child: Image.asset(
+        widget.scratchCard.image,
+        width: 70,
+        height: 70,
+        fit: BoxFit.contain,
       ),
     );
 
